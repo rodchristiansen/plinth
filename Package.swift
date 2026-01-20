@@ -14,6 +14,10 @@ let package = Package(
     targets: [
         .executableTarget(
             name: "Plinth",
+            exclude: [
+                "Resources/Info.plist",
+                "Resources/Plinth.entitlements"
+            ],
             resources: [
                 .process("Resources/Assets.xcassets"),
                 .copy("Resources/LaunchAgents")
