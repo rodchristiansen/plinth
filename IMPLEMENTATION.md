@@ -430,7 +430,7 @@ import ServiceManagement
 actor LaunchAgentService {
     static let shared = LaunchAgentService()
     
-    private let agentIdentifier = "com.github.macadmins.Plinth.Agent"
+    private let agentIdentifier = "ca.ecuad.macadmins.Plinth.Agent"
     
     var isRegistered: Bool {
         get async {
@@ -468,7 +468,7 @@ actor LaunchAgentService {
 
 #### LaunchAgent Plist
 
-The embedded LaunchAgent plist at `Contents/Library/LaunchAgents/com.github.macadmins.Plinth.Agent.plist`:
+The embedded LaunchAgent plist at `Contents/Library/LaunchAgents/ca.ecuad.macadmins.Plinth.Agent.plist`:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -476,12 +476,12 @@ The embedded LaunchAgent plist at `Contents/Library/LaunchAgents/com.github.maca
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.github.macadmins.Plinth.Agent</string>
+    <string>ca.ecuad.macadmins.Plinth.Agent</string>
     <key>BundleProgram</key>
     <string>Contents/MacOS/Plinth</string>
     <key>AssociatedBundleIdentifiers</key>
     <array>
-        <string>com.github.macadmins.Plinth</string>
+        <string>ca.ecuad.macadmins.Plinth</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
@@ -731,7 +731,7 @@ final class PlinthConfiguration: Sendable {
     static let shared = PlinthConfiguration()
     
     private let defaults = UserDefaults.standard
-    private let domain = "com.github.macadmins.Plinth"
+    private let domain = "ca.ecuad.macadmins.Plinth"
     
     var contentPath: String? {
         get { defaults.string(forKey: "ContentPath") }
@@ -980,11 +980,11 @@ For full kiosk lockdown, deploy these MDM profiles alongside Plinth:
 Enable verbose logging:
 
 ```bash
-defaults write com.github.macadmins.Plinth EnableDebugLogging -bool true
+defaults write ca.ecuad.macadmins.Plinth EnableDebugLogging -bool true
 ```
 
 View logs:
 
 ```bash
-log stream --predicate 'subsystem == "com.github.macadmins.Plinth"'
+log stream --predicate 'subsystem == "ca.ecuad.macadmins.Plinth"'
 ```

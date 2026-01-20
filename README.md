@@ -50,8 +50,17 @@ brew install --cask plinth
 ```bash
 git clone https://github.com/emilycarru-its-infra/plinth.git
 cd plinth
-xcodebuild -scheme Plinth -configuration Release
+
+# Quick build (unsigned)
+make build
+
+# Full signed release (requires signing certificates)
+cp .env.example .env
+# Edit .env with your signing credentials
+make release
 ```
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed build instructions.
 
 ## Usage
 
@@ -81,7 +90,7 @@ open -a Plinth --args --file /path/to/video.mp4 --player iina
 Plinth stores its configuration in:
 
 ```
-~/Library/Preferences/com.github.macadmins.Plinth.plist
+~/Library/Preferences/ca.ecuad.macadmins.Plinth.plist
 ```
 
 Key settings:
@@ -99,7 +108,7 @@ Key settings:
 
 ### MDM Deployment
 
-Deploy configuration via MDM profile targeting `com.github.macadmins.Plinth`:
+Deploy configuration via MDM profile targeting `ca.ecuad.macadmins.Plinth`:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -110,9 +119,9 @@ Deploy configuration via MDM profile targeting `com.github.macadmins.Plinth`:
     <array>
         <dict>
             <key>PayloadType</key>
-            <string>com.github.macadmins.Plinth</string>
+            <string>ca.ecuad.macadmins.Plinth</string>
             <key>PayloadIdentifier</key>
-            <string>com.github.macadmins.Plinth.config</string>
+            <string>ca.ecuad.macadmins.Plinth.config</string>
             <key>PayloadUUID</key>
             <string>YOUR-UUID-HERE</string>
             <key>PayloadVersion</key>
@@ -173,7 +182,7 @@ Plinth/
   Resources/
     Assets.xcassets/
   LaunchAgent/
-    com.github.macadmins.Plinth.Agent.plist
+    ca.ecuad.macadmins.Plinth.Agent.plist
 ```
 
 ## Supported Players

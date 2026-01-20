@@ -93,9 +93,7 @@ struct SettingsView: View {
                 
                 if loginItemStatus == .requiresApproval {
                     Button("Open Login Items Settings") {
-                        Task { @MainActor in
-                            await LaunchAgentService.shared.openLoginItemsSettings()
-                        }
+                        LaunchAgentService.shared.openLoginItemsSettings()
                     }
                     .buttonStyle(.link)
                 }
@@ -180,7 +178,7 @@ struct SettingsView: View {
     }
     
     private func showPreferencesInFinder() {
-        let prefsPath = NSHomeDirectory() + "/Library/Preferences/com.github.macadmins.Plinth.plist"
+        let prefsPath = NSHomeDirectory() + "/Library/Preferences/ca.ecuad.macadmins.Plinth.plist"
         let url = URL(fileURLWithPath: prefsPath)
         NSWorkspace.shared.activateFileViewerSelecting([url])
     }

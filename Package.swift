@@ -15,7 +15,8 @@ let package = Package(
         .executableTarget(
             name: "Plinth",
             resources: [
-                .process("Resources")
+                .process("Resources/Assets.xcassets"),
+                .copy("Resources/LaunchAgents")
             ],
             swiftSettings: [
                 .enableExperimentalFeature("StrictConcurrency")

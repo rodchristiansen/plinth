@@ -91,7 +91,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 // MARK: - Notifications
 
 extension Notification.Name {
-    static let plinthAutoStart = Notification.Name("com.github.macadmins.Plinth.autoStart")
-    static let plinthStartKiosk = Notification.Name("com.github.macadmins.Plinth.startKiosk")
-    static let plinthStopKiosk = Notification.Name("com.github.macadmins.Plinth.stopKiosk")
+    static let plinthAutoStart = Notification.Name("ca.ecuad.macadmins.Plinth.autoStart")
+    static let plinthStartKiosk = Notification.Name("ca.ecuad.macadmins.Plinth.startKiosk")
+    static let plinthStopKiosk = Notification.Name("ca.ecuad.macadmins.Plinth.stopKiosk")
 }

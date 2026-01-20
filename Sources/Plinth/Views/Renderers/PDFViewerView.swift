@@ -1,4 +1,4 @@
-import PDFKit
+@preconcurrency import PDFKit
 import SwiftUI
 
 // MARK: - Native PDF View

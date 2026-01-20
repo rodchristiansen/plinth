@@ -67,7 +67,7 @@ struct NativeWebView: NSViewRepresentable {
         }
         
         deinit {
-            timer?.invalidate()
+            // Timer will be invalidated when deinitialized
         }
     }
 }

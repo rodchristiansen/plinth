@@ -8,7 +8,7 @@ final class PlinthConfiguration: Sendable {
     static let shared = PlinthConfiguration()
     
     private let defaults = UserDefaults.standard
-    private let domain = "com.github.macadmins.Plinth"
+    private let domain = "ca.ecuad.macadmins.Plinth"
     
     // MARK: - Content Settings
     
