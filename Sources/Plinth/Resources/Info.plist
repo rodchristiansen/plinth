@@ -7,7 +7,7 @@
     <key>CFBundleExecutable</key>
     <string>Plinth</string>
     <key>CFBundleIdentifier</key>
-    <string>ca.ecuad.macadmins.Plinth</string>
+    <string>ca.ecuad.macadmins.plinth</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
