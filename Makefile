@@ -1,7 +1,7 @@
 # Plinth Build Configuration
 # Load from environment or .env file
 
-BUNDLE_ID = ca.ecuad.macadmins.Plinth
+BUNDLE_ID = ca.ecuad.macadmins.plinth
 APP_NAME = Plinth
 VERSION = 1.0.0
 BUILD_NUMBER = 1
