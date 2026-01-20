@@ -110,7 +110,7 @@ Sources/Plinth/
     Plinth.entitlements
     Assets.xcassets/
     LaunchAgents/
-      ca.ecuad.macadmins.Plinth.Agent.plist
+      ca.ecuad.macadmins.plinth.agent.plist
 
 Tests/PlinthTests/
   PlinthTests.swift         - Unit tests
