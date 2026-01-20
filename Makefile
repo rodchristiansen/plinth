@@ -36,14 +36,14 @@ help:
 	@echo "Plinth Build System"
 	@echo ""
 	@echo "Targets:"
-	@echo "  all         - Build, sign, and package (default)"
+	@echo "  all         - Full release pipeline: clean, test, build, sign, pkg, dmg, notarize (default)"
 	@echo "  build       - Build Swift package"
 	@echo "  app         - Create app bundle"
 	@echo "  sign        - Code sign app bundle"
 	@echo "  pkg         - Create signed installer package"
 	@echo "  dmg         - Create DMG distribution"
 	@echo "  notarize    - Submit for notarization"
-	@echo "  release     - Full release pipeline (build, sign, pkg, dmg, notarize)"
+	@echo "  release     - Same as 'all'"
 	@echo "  test        - Run unit tests"
 	@echo "  clean       - Clean build artifacts"
 	@echo ""
@@ -53,7 +53,12 @@ help:
 	@echo "  KEYCHAIN              - Path to signing keychain"
 	@echo "  NOTARIZATION_PROFILE  - Keychain profile for notarization"
 
-all: clean build app sign
+all: clean test build app sign pkg dmg notarize
+	@echo ""
+	@echo "Complete build finished!"
+	@echo "  Package: $(APP_NAME).pkg"
+	@echo "  DMG: $(APP_NAME).dmg"
+	@echo "Both are signed and notarized."
 
 clean:
 	rm -rf $(DIST_DIR)
