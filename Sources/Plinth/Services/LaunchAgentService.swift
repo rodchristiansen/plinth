@@ -7,7 +7,7 @@ import AppKit
 actor LaunchAgentService {
     static let shared = LaunchAgentService()
     
-    private let agentPlistName = "ca.ecuad.macadmins.Plinth.Agent.plist"
+    private let agentPlistName = "ca.ecuad.macadmins.plinth.agent.plist"
     
     // MARK: - Status
     

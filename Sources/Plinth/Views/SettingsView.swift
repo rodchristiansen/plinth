@@ -178,7 +178,7 @@ struct SettingsView: View {
     }
     
     private func showPreferencesInFinder() {
-        let prefsPath = NSHomeDirectory() + "/Library/Preferences/ca.ecuad.macadmins.Plinth.plist"
+        let prefsPath = NSHomeDirectory() + "/Library/Preferences/ca.ecuad.macadmins.plinth.plist"
         let url = URL(fileURLWithPath: prefsPath)
         NSWorkspace.shared.activateFileViewerSelecting([url])
     }
