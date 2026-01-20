@@ -76,21 +76,21 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed build instructions.
 
 ```bash
 # Start with a video file
-open -a Plinth --args --file /path/to/video.mp4
+open -a plinth --args --file /path/to/video.mp4
 
 # Start with a URL
-open -a Plinth --args --url "https://example.com"
+open -a plinth --args --url "https://example.com"
 
 # Start with a specific player
-open -a Plinth --args --file /path/to/video.mp4 --player iina
+open -a plinth --args --file /path/to/video.mp4 --player iina
 ```
 
 ### Configuration File
 
-Plinth stores its configuration in:
+plinth stores its configuration in:
 
 ```
-~/Library/Preferences/ca.ecuad.macadmins.Plinth.plist
+~/Library/Preferences/ca.ecuad.macadmins.plinth.plist
 ```
 
 Key settings:
@@ -108,7 +108,7 @@ Key settings:
 
 ### MDM Deployment
 
-Deploy configuration via MDM profile targeting `ca.ecuad.macadmins.Plinth`:
+Deploy configuration via MDM profile targeting `ca.ecuad.macadmins.plinth`:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -119,9 +119,9 @@ Deploy configuration via MDM profile targeting `ca.ecuad.macadmins.Plinth`:
     <array>
         <dict>
             <key>PayloadType</key>
-            <string>ca.ecuad.macadmins.Plinth</string>
+            <string>ca.ecuad.macadmins.plinth</string>
             <key>PayloadIdentifier</key>
-            <string>ca.ecuad.macadmins.Plinth.config</string>
+            <string>ca.ecuad.macadmins.plinth.config</string>
             <key>PayloadUUID</key>
             <string>YOUR-UUID-HERE</string>
             <key>PayloadVersion</key>
