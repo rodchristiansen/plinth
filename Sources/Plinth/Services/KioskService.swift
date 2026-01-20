@@ -12,12 +12,12 @@ actor KioskService {
     
     // MARK: - Lockdown
     
-    @MainActor
     func enableLockdown(config: KioskConfiguration) async throws {
         guard config.enableLockdown else { return }
         
-        // Set presentation options
-        var options: NSApplication.PresentationOptions = []
+        await MainActor.run {
+            // Set presentation options
+            var options: NSApplication.PresentationOptions = []
         
         if config.hideDock {
             options.insert(.hideDock)
@@ -36,14 +36,8 @@ actor KioskService {
         }
         
         NSApp.presentationOptions = options
-        isLocked = true
-        
-        // Power management
-        if config.preventSleep {
-            try await preventSleep()
         }
         
-        // Cursor
         if config.hideCursor {
             await hideCursor()
         }
@@ -54,9 +48,10 @@ actor KioskService {
         }
     }
     
-    @MainActor
     func disableLockdown() async {
-        NSApp.presentationOptions = []
+        await MainActor.run {
+            NSApp.presentationOptions = []
+        }
         isLocked = false
         
         await allowSleep()

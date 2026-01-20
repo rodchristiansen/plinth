@@ -1,12 +1,13 @@
 import Foundation
 import ServiceManagement
+import AppKit
 
 // MARK: - LaunchAgent Service
 
 actor LaunchAgentService {
     static let shared = LaunchAgentService()
     
-    private let agentPlistName = "com.github.macadmins.Plinth.Agent.plist"
+    private let agentPlistName = "ca.ecuad.macadmins.Plinth.Agent.plist"
     
     // MARK: - Status
     

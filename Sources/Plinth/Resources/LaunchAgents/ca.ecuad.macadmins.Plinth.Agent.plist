@@ -3,12 +3,12 @@
 <plist version="1.0">
 <dict>
     <key>Label</key>
-    <string>com.github.macadmins.Plinth.Agent</string>
+    <string>ca.ecuad.macadmins.Plinth.Agent</string>
     <key>BundleProgram</key>
     <string>Contents/MacOS/Plinth</string>
     <key>AssociatedBundleIdentifiers</key>
     <array>
-        <string>com.github.macadmins.Plinth</string>
+        <string>ca.ecuad.macadmins.Plinth</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
@@ -24,8 +24,8 @@
     <key>LimitLoadToSessionType</key>
     <string>Aqua</string>
     <key>StandardOutPath</key>
-    <string>/tmp/com.github.macadmins.Plinth.stdout.log</string>
+    <string>/tmp/ca.ecuad.macadmins.Plinth.stdout.log</string>
     <key>StandardErrorPath</key>
-    <string>/tmp/com.github.macadmins.Plinth.stderr.log</string>
+    <string>/tmp/ca.ecuad.macadmins.Plinth.stderr.log</string>
 </dict>
 </plist>

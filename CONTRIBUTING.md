@@ -20,8 +20,62 @@ swift build
 # Build release
 swift build -c release
 
+# Build and create app bundle (unsigned)
+make app
+
+# Full signed build with PKG and DMG
+cp .env.example .env
+# Edit .env with signing credentials
+make release
+
 # Run tests
 swift test
+
+# Run tests with make
+make test
+```
+
+### Build Targets
+
+The Makefile provides several targets:
+
+| Target | Description |
+|--------|-------------|
+| `make build` | Build Swift package (release) |
+| `make app` | Create unsigned app bundle |
+| `make sign` | Code sign app bundle |
+| `make pkg` | Create signed installer package |
+| `make dmg` | Create signed DMG |
+| `make notarize` | Submit for notarization |
+| `make release` | Full pipeline (build, sign, pkg, dmg, notarize) |
+| `make test` | Run unit tests |
+| `make clean` | Clean build artifacts |
+| `make run` | Build and run |
+
+### Signing Configuration
+
+To build signed releases, create a `.env` file:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` with your credentials:
+
+```bash
+SIGNING_IDENTITY=Developer ID Application: Your Name (TEAMID)
+INSTALLER_IDENTITY=Developer ID Installer: Your Name (TEAMID)
+KEYCHAIN=${HOME}/Library/Keychains/signing.keychain
+NOTARIZATION_PROFILE=notarization_credentials
+```
+
+Setup notarization profile:
+
+```bash
+xcrun notarytool store-credentials notarization_credentials \
+  --apple-id "your@email.com" \
+  --team-id "TEAMID" \
+  --password "app-specific-password"
 ```
 
 ### Project Structure
@@ -56,7 +110,7 @@ Sources/Plinth/
     Plinth.entitlements
     Assets.xcassets/
     LaunchAgents/
-      com.github.macadmins.Plinth.Agent.plist
+      ca.ecuad.macadmins.Plinth.Agent.plist
 
 Tests/PlinthTests/
   PlinthTests.swift         - Unit tests
