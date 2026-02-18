@@ -6,6 +6,7 @@ import WebKit
 struct NativeWebView: NSViewRepresentable {
     let url: URL
     let refreshInterval: TimeInterval
+    var zoomLevel: Double = 1.0
     
     func makeNSView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
@@ -34,7 +35,7 @@ struct NativeWebView: NSViewRepresentable {
     }
     
     func updateNSView(_ nsView: WKWebView, context: Context) {
-        // URL changes not supported during display
+        nsView.pageZoom = zoomLevel
     }
     
     func makeCoordinator() -> Coordinator {
@@ -77,14 +78,33 @@ struct NativeWebView: NSViewRepresentable {
 struct WebViewerView: View {
     let url: URL
     let refreshInterval: Int
+    @State private var zoomLevel: Double = 1.0
     
     var body: some View {
         NativeWebView(
             url: url,
-            refreshInterval: TimeInterval(refreshInterval)
+            refreshInterval: TimeInterval(refreshInterval),
+            zoomLevel: zoomLevel
         )
         .ignoresSafeArea()
+        .onReceive(NotificationCenter.default.publisher(for: .plinthWebZoomIn)) { _ in
+            zoomLevel = min(zoomLevel + 0.1, 5.0)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .plinthWebZoomOut)) { _ in
+            zoomLevel = max(zoomLevel - 0.1, 0.3)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .plinthWebZoomReset)) { _ in
+            zoomLevel = 1.0
+        }
     }
+}
+
+// MARK: - Zoom Notifications
+
+extension Notification.Name {
+    static let plinthWebZoomIn = Notification.Name("ca.ecuad.macadmins.plinth.webZoomIn")
+    static let plinthWebZoomOut = Notification.Name("ca.ecuad.macadmins.plinth.webZoomOut")
+    static let plinthWebZoomReset = Notification.Name("ca.ecuad.macadmins.plinth.webZoomReset")
 }
 
 #Preview {
