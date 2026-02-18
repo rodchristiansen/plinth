@@ -14,26 +14,49 @@ struct ConfigurationView: View {
             
             Divider()
             
-            // Main content
-            ScrollView {
-                VStack(spacing: 24) {
-                    // Drop zone
-                    dropZone
-                    
-                    // URL input
-                    urlInputSection
-                    
-                    // Content settings (shown when content is configured)
+            // Main content with settings sidebar
+            HStack(spacing: 0) {
+                // Left: Content area
+                ScrollView {
+                    VStack(spacing: 24) {
+                        dropZone
+                        urlInputSection
+                    }
+                    .padding(24)
+                }
+                .frame(minWidth: 380)
+                
+                Divider()
+                
+                // Right: Settings sidebar
+                VStack(spacing: 0) {
                     if viewModel.contentType != nil {
-                        Divider()
-                        contentSettingsSection
-                        Divider()
-                        displaySettingsSection
-                        Divider()
-                        kioskSettingsSection
+                        ScrollView {
+                            VStack(alignment: .leading, spacing: 20) {
+                                contentSettingsSection
+                                Divider()
+                                displaySettingsSection
+                                Divider()
+                                kioskSettingsSection
+                            }
+                            .padding(20)
+                        }
+                    } else {
+                        Spacer()
+                        VStack(spacing: 12) {
+                            Image(systemName: "slider.horizontal.3")
+                                .font(.system(size: 32))
+                                .foregroundStyle(.quaternary)
+                            Text("Settings will appear here\nonce content is configured")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                                .multilineTextAlignment(.center)
+                        }
+                        Spacer()
                     }
                 }
-                .padding(24)
+                .frame(width: 300)
+                .background(Color(nsColor: .controlBackgroundColor))
             }
             
             Divider()
@@ -41,7 +64,7 @@ struct ConfigurationView: View {
             // Footer with actions
             footerSection
         }
-        .frame(minWidth: 500, minHeight: 600)
+        .frame(minWidth: 700, minHeight: 500)
         .alert("Error", isPresented: $viewModel.showError) {
             Button("OK") {}
         } message: {
