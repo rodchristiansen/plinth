@@ -1,32 +1,57 @@
 import SwiftUI
+import AppKit
+
+// MARK: - Kiosk Key Monitor
+
+private enum KioskKeyMonitor {
+    nonisolated(unsafe) static var monitor: Any?
+
+    @MainActor
+    static func install() {
+        guard monitor == nil else { return }
+        monitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+            let modifiers = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+            if modifiers.contains([.control, .option, .command]),
+               event.charactersIgnoringModifiers?.lowercased() == "e" {
+                NotificationCenter.default.post(name: .plinthExitKioskRequested, object: nil)
+                return nil
+            }
+            return event
+        }
+    }
+
+    @MainActor
+    static func remove() {
+        if let m = monitor {
+            NSEvent.removeMonitor(m)
+            monitor = nil
+        }
+    }
+}
 
 // MARK: - Kiosk Content View
 
 struct KioskContentView: View {
     @Bindable var viewModel: ContentViewModel
-    @State private var showExitConfirmation = false
+    @State private var showAuthPrompt = false
+    @State private var isAuthenticating = false
+    @State private var authFailed = false
     
     var body: some View {
         ZStack {
             // Content
             contentView
             
-            // Exit overlay (triple-click to show)
-            exitOverlay
+            // Auth overlay
+            if showAuthPrompt {
+                exitAuthOverlay
+            }
         }
         .ignoresSafeArea()
-        .onTapGesture(count: 3) {
-            showExitConfirmation = true
-        }
-        .confirmationDialog("Exit Kiosk Mode?", isPresented: $showExitConfirmation) {
-            Button("Exit", role: .destructive) {
-                Task {
-                    await viewModel.stopKiosk()
-                }
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("This will stop the current presentation and return to configuration.")
+        .onAppear { KioskKeyMonitor.install() }
+        .onDisappear { KioskKeyMonitor.remove() }
+        .onReceive(NotificationCenter.default.publisher(for: .plinthExitKioskRequested)) { _ in
+            showAuthPrompt = true
         }
     }
     
@@ -68,14 +93,71 @@ struct KioskContentView: View {
         }
     }
     
-    // MARK: - Exit Overlay
+    // MARK: - Exit Auth Overlay
     
-    @ViewBuilder
-    private var exitOverlay: some View {
-        if showExitConfirmation {
-            Color.black.opacity(0.5)
-                .ignoresSafeArea()
-        }
+    private var exitAuthOverlay: some View {
+        Color.black.opacity(0.6)
+            .ignoresSafeArea()
+            .overlay {
+                VStack(spacing: 20) {
+                    Image(systemName: "lock.shield")
+                        .font(.system(size: 44))
+                        .foregroundStyle(.secondary)
+                    
+                    Text("Exit Kiosk Mode")
+                        .font(.title2.bold())
+                    
+                    Text("Administrator authentication is required\nto exit kiosk mode and modify settings.")
+                        .font(.body)
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                    
+                    if authFailed {
+                        Text("Authentication failed. Please try again.")
+                            .font(.callout)
+                            .foregroundStyle(.red)
+                    }
+                    
+                    HStack(spacing: 16) {
+                        Button("Cancel") {
+                            showAuthPrompt = false
+                            authFailed = false
+                        }
+                        .keyboardShortcut(.cancelAction)
+                        
+                        Button("Authenticate") {
+                            // Ensure cursor is visible for the auth dialog
+                            NSCursor.unhide()
+                            Task {
+                                isAuthenticating = true
+                                authFailed = false
+                                let success = await AuthenticationService.shared.requestAdminAuthentication()
+                                isAuthenticating = false
+                                if success {
+                                    showAuthPrompt = false
+                                    await viewModel.stopKiosk()
+                                } else {
+                                    authFailed = true
+                                }
+                            }
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .keyboardShortcut(.defaultAction)
+                        .disabled(isAuthenticating)
+                    }
+                    
+                    if isAuthenticating {
+                        ProgressView()
+                            .controlSize(.small)
+                    }
+                }
+                .padding(40)
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color(nsColor: .windowBackgroundColor))
+                        .shadow(radius: 20)
+                )
+            }
     }
 }
 
@@ -96,7 +178,7 @@ struct ExternalPlayerPlaceholder: View {
                     .font(.headline)
                     .foregroundStyle(.white)
                 
-                Text("Triple-click to exit kiosk mode")
+                Text("Press ⌃⌥⌘E to exit kiosk mode")
                     .font(.caption)
                     .foregroundStyle(.gray)
             }
