@@ -6,6 +6,14 @@ APP_NAME = Plinth
 VERSION = 1.0.0
 BUILD_NUMBER = 1
 
+# Target architecture: empty = native, x86_64 = Intel, arm64 = Apple Silicon
+ARCH ?=
+ifneq ($(ARCH),)
+SWIFT_ARCH_FLAG = --arch $(ARCH)
+else
+SWIFT_ARCH_FLAG =
+endif
+
 # Build directories
 BUILD_DIR = .build
 DIST_DIR = dist
@@ -30,14 +38,16 @@ STAPLER = xcrun stapler
 HDIUTIL = hdiutil
 PKGBUILD = pkgbuild
 
-.PHONY: all clean build app sign pkg dmg notarize release test help
+.PHONY: all clean build app sign pkg dmg notarize release intel build-universal universal test help
 
 help:
 	@echo "Plinth Build System"
 	@echo ""
 	@echo "Targets:"
 	@echo "  all         - Full release pipeline: clean, test, build, sign, pkg, dmg, notarize (default)"
-	@echo "  build       - Build Swift package"
+	@echo "  build       - Build Swift package (native arch)"
+	@echo "  intel       - Full pipeline for Intel x86_64"
+	@echo "  universal   - Full pipeline for universal binary (arm64 + x86_64)"
 	@echo "  app         - Create app bundle"
 	@echo "  sign        - Code sign app bundle"
 	@echo "  pkg         - Create signed installer package"
@@ -46,6 +56,12 @@ help:
 	@echo "  release     - Same as 'all'"
 	@echo "  test        - Run unit tests"
 	@echo "  clean       - Clean build artifacts"
+	@echo ""
+	@echo "Architecture:"
+	@echo "  make build ARCH=x86_64   - Build for Intel"
+	@echo "  make build ARCH=arm64    - Build for Apple Silicon"
+	@echo "  make intel               - Full pipeline targeting Intel x86_64"
+	@echo "  make universal           - Full pipeline with universal binary"
 	@echo ""
 	@echo "Environment variables:"
 	@echo "  SIGNING_IDENTITY      - Developer ID Application certificate"
@@ -60,20 +76,38 @@ all: clean test build app sign pkg dmg notarize
 	@echo "  DMG: $(APP_NAME).dmg"
 	@echo "Both are signed and notarized."
 
+intel:
+	$(MAKE) ARCH=x86_64 clean test build app sign pkg dmg notarize
+
+build-universal:
+	@echo "Building $(APP_NAME) for arm64..."
+	$(SWIFT) build -c release --arch arm64
+	@echo "Building $(APP_NAME) for x86_64..."
+	$(SWIFT) build -c release --arch x86_64
+	@echo "Creating universal binary..."
+	lipo -create -output $(BUILD_DIR)/release/$(APP_NAME) \
+		$(BUILD_DIR)/arm64-apple-macosx/release/$(APP_NAME) \
+		$(BUILD_DIR)/x86_64-apple-macosx/release/$(APP_NAME)
+	@lipo -info $(BUILD_DIR)/release/$(APP_NAME)
+
+universal: clean test build-universal app sign pkg dmg notarize
+	@echo ""
+	@echo "Universal build complete!"
+
 clean:
 	rm -rf $(DIST_DIR)
 	rm -f $(APP_NAME).dmg $(APP_NAME).pkg
 	$(SWIFT) package clean
 
 build:
-	@echo "Building $(APP_NAME)..."
-	$(SWIFT) build -c release
+	@echo "Building $(APP_NAME)$(if $(ARCH), for $(ARCH),)..."
+	$(SWIFT) build -c release $(SWIFT_ARCH_FLAG)
 
 test:
 	@echo "Running tests..."
 	$(SWIFT) test
 
-app: build
+app:
 	@echo "Creating app bundle..."
 	@mkdir -p $(APP_BUNDLE)/Contents/MacOS
 	@mkdir -p $(APP_BUNDLE)/Contents/Resources
@@ -196,11 +230,7 @@ notarize: pkg dmg
 	
 	@echo "Notarization complete"
 
-release: clean test build app sign pkg dmg notarize
-	@echo ""
-	@echo "Release build complete!"
-	@echo "  Package: $(APP_NAME).pkg"
-	@echo "  DMG: $(APP_NAME).dmg"
+release: all
 
 # Development helpers
 run: build
