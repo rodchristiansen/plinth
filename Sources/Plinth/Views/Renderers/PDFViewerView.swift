@@ -35,42 +35,62 @@ struct NativePDFView: NSViewRepresentable {
         // URL changes not supported during display
     }
     
+    static func dismantleNSView(_ nsView: PDFView, coordinator: Coordinator) {
+        coordinator.stopTimer()
+    }
+    
     func makeCoordinator() -> Coordinator {
         Coordinator()
     }
     
+    @MainActor
     class Coordinator {
         private var timer: Timer?
         private var currentIndex = 0
+        private var pageCount = 0
+        private var loop = false
+        private weak var pdfView: PDFView?
+        private var document: PDFDocument?
         
         func startTimer(pdfView: PDFView, document: PDFDocument, interval: TimeInterval, loop: Bool) {
             timer?.invalidate()
             currentIndex = 0
+            self.pdfView = pdfView
+            self.document = document
+            self.pageCount = document.pageCount
+            self.loop = loop
             
             timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
-                guard let self = self else { return }
-                
-                self.currentIndex += 1
-                
-                if self.currentIndex >= document.pageCount {
-                    if loop {
-                        self.currentIndex = 0
-                    } else {
-                        self.timer?.invalidate()
-                        return
-                    }
-                }
-                
-                if let page = document.page(at: self.currentIndex) {
-                    DispatchQueue.main.async {
-                        pdfView.go(to: page)
-                    }
+                MainActor.assumeIsolated {
+                    self?.advancePage()
                 }
             }
         }
         
-        deinit {
+        private func advancePage() {
+            currentIndex += 1
+            
+            if currentIndex >= pageCount {
+                if loop {
+                    currentIndex = 0
+                } else {
+                    timer?.invalidate()
+                    return
+                }
+            }
+            
+            if let page = document?.page(at: currentIndex) {
+                pdfView?.go(to: page)
+            }
+        }
+        
+        func stopTimer() {
             timer?.invalidate()
+            timer = nil
+        }
+        
+        deinit {
+            // Timer is invalidated in stopTimer() called from updateNSView or view teardown
         }
     }
 }
