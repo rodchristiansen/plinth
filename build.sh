@@ -6,8 +6,20 @@ set -e
 # Load .env if it exists
 if [ -f .env ]; then
     echo "Loading environment from .env..."
-    export $(grep -v '^#' .env | xargs)
+    set -a
+    # shellcheck source=.env
+    source .env
+    set +a
 fi
 
-# Run make with provided arguments
-make "$@"
+# Translate convenience flags to make targets/variables
+MAKE_ARGS=()
+for arg in "$@"; do
+    case "$arg" in
+        --intel)     MAKE_ARGS+=("intel") ;;
+        --universal) MAKE_ARGS+=("universal") ;;
+        *)           MAKE_ARGS+=("$arg") ;;
+    esac
+done
+
+make "${MAKE_ARGS[@]}"
