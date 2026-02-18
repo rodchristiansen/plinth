@@ -94,4 +94,5 @@ extension Notification.Name {
     static let plinthAutoStart = Notification.Name("ca.ecuad.macadmins.plinth.autoStart")
     static let plinthStartKiosk = Notification.Name("ca.ecuad.macadmins.plinth.startKiosk")
     static let plinthStopKiosk = Notification.Name("ca.ecuad.macadmins.plinth.stopKiosk")
+    static let plinthExitKioskRequested = Notification.Name("ca.ecuad.macadmins.plinth.exitKioskRequested")
 }

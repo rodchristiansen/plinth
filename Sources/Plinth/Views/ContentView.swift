@@ -1,4 +1,5 @@
 import SwiftUI
+import AppKit
 import UniformTypeIdentifiers
 
 // MARK: - Content View
@@ -194,6 +195,9 @@ final class ContentViewModel {
         
         await ContentService.shared.stop()
         await KioskService.shared.disableLockdown()
+        
+        // Always ensure cursor is visible when returning to settings
+        NSCursor.unhide()
     }
     
     // MARK: - Validation
