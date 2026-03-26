@@ -6,7 +6,6 @@ import WebKit
 struct NativeWebView: NSViewRepresentable {
     let url: URL
     let refreshInterval: TimeInterval
-    var zoomLevel: Double = 1.0
     
     func makeNSView(context: Context) -> WKWebView {
         let config = WKWebViewConfiguration()
@@ -35,7 +34,7 @@ struct NativeWebView: NSViewRepresentable {
     }
     
     func updateNSView(_ nsView: WKWebView, context: Context) {
-        nsView.pageZoom = zoomLevel
+        // URL changes not supported during display
     }
     
     func makeCoordinator() -> Coordinator {
@@ -97,14 +96,6 @@ struct WebViewerView: View {
             zoomLevel = 1.0
         }
     }
-}
-
-// MARK: - Zoom Notifications
-
-extension Notification.Name {
-    static let plinthWebZoomIn = Notification.Name("ca.ecuad.macadmins.plinth.webZoomIn")
-    static let plinthWebZoomOut = Notification.Name("ca.ecuad.macadmins.plinth.webZoomOut")
-    static let plinthWebZoomReset = Notification.Name("ca.ecuad.macadmins.plinth.webZoomReset")
 }
 
 #Preview {
