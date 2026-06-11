@@ -61,3 +61,11 @@ jobs:
         with:
           files: Plinth.dmg
           generate_release_notes: true
+      - name: Strip attribution from release notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          body=$(gh release view "$TAG" -R "$GITHUB_REPOSITORY" --json body --jq .body)
+          cleaned=$(printf '%s\n' "$body" | sed -E -e 's/ by @[A-Za-z0-9_-]+ in / in /g' -e '/^#+ New Contributors/d' -e '/made their first contribution/d')
+          gh release edit "$TAG" -R "$GITHUB_REPOSITORY" --notes "$cleaned"
