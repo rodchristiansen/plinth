@@ -82,7 +82,7 @@ actor ContentService {
         config.arguments = arguments + [url.path]
         config.activates = true
         
-        try await NSWorkspace.shared.openApplication(at: appURL, configuration: config)
+        try await NSWorkspace.shared.launchApplication(at: appURL, configuration: config)
     }
     
     private func launchQuickTimeWithLoop(url: URL) async throws {
@@ -111,7 +111,7 @@ actor ContentService {
         let config = NSWorkspace.OpenConfiguration()
         config.activates = true
         
-        try await NSWorkspace.shared.open([url], withApplicationAt: appURL, configuration: config)
+        try await NSWorkspace.shared.open(url, withApplicationAt: appURL, configuration: config)
         
         // Preview slideshow mode via AppleScript
         if playerID == "com.apple.Preview" {
@@ -147,7 +147,7 @@ actor ContentService {
         let config = NSWorkspace.OpenConfiguration()
         config.activates = true
         
-        try await NSWorkspace.shared.open([url], withApplicationAt: appURL, configuration: config)
+        try await NSWorkspace.shared.open(url, withApplicationAt: appURL, configuration: config)
         
         // Safari fullscreen
         if playerID == "com.apple.Safari" {
@@ -233,6 +233,36 @@ enum ContentError: Error, LocalizedError, Sendable {
             return "Failed to launch content: \(reason)"
         case .appleScriptFailed(let message):
             return "AppleScript error: \(message)"
+        }
+    }
+}
+
+// MARK: - NSWorkspace Helpers
+
+// The async NSWorkspace APIs return a non-Sendable NSRunningApplication, which
+// older Swift 6 compilers refuse to pass back into an actor even when discarded.
+private extension NSWorkspace {
+    func launchApplication(at appURL: URL, configuration: OpenConfiguration) async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            openApplication(at: appURL, configuration: configuration) { _, error in
+                if let error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume()
+                }
+            }
+        }
+    }
+
+    func open(_ url: URL, withApplicationAt appURL: URL, configuration: OpenConfiguration) async throws {
+        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            open([url], withApplicationAt: appURL, configuration: configuration) { _, error in
+                if let error {
+                    continuation.resume(throwing: error)
+                } else {
+                    continuation.resume()
+                }
+            }
         }
     }
 }
