@@ -77,24 +77,13 @@ struct NativeWebView: NSViewRepresentable {
 struct WebViewerView: View {
     let url: URL
     let refreshInterval: Int
-    @State private var zoomLevel: Double = 1.0
     
     var body: some View {
         NativeWebView(
             url: url,
-            refreshInterval: TimeInterval(refreshInterval),
-            zoomLevel: zoomLevel
+            refreshInterval: TimeInterval(refreshInterval)
         )
         .ignoresSafeArea()
-        .onReceive(NotificationCenter.default.publisher(for: .plinthWebZoomIn)) { _ in
-            zoomLevel = min(zoomLevel + 0.1, 5.0)
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .plinthWebZoomOut)) { _ in
-            zoomLevel = max(zoomLevel - 0.1, 0.3)
-        }
-        .onReceive(NotificationCenter.default.publisher(for: .plinthWebZoomReset)) { _ in
-            zoomLevel = 1.0
-        }
     }
 }
 
